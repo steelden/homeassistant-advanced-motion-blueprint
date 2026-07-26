@@ -1,9 +1,9 @@
 blueprint:
   name: "Advanced Motion-Activated Light (Multi-Sensor, Time Slots)"
   description: >
-    Turn on lights/switches by motion with support for multiple motion sensors
-    (OR logic), up to 5 time slots with individual targets and settings
-    (brightness, color temperature, transition), and a global turn-off delay.
+    Turn on lights/switches by motion with support for multiple motion/occupancy
+    sensors (OR logic), up to 5 time slots with individual targets and brightness
+    settings, and a global turn-off delay.
   domain: automation
   source_url: https://github.com/steelden/homeassistant-advanced-motion-blueprint
 
@@ -14,7 +14,9 @@ blueprint:
       selector:
         entity:
           domain: binary_sensor
-          device_class: motion
+          device_class:
+            - motion
+            - occupancy
           multiple: true
 
     wait_time:
@@ -57,26 +59,6 @@ blueprint:
           max: 100
           unit_of_measurement: "%"
           mode: slider
-    slot_1_color_temp:
-      name: "Slot 1 — Color Temperature (mireds)"
-      description: "Color temperature for lights in slot 1 (0 = use device default)."
-      default: 0
-      selector:
-        number:
-          min: 0
-          max: 500
-          unit_of_measurement: "mireds"
-          mode: slider
-    slot_1_transition:
-      name: "Slot 1 — Transition (seconds)"
-      description: "Transition duration for slot 1 (0 = instant)."
-      default: 0
-      selector:
-        number:
-          min: 0
-          max: 60
-          unit_of_measurement: seconds
-          mode: slider
 
     # ── Time Slot 2 ──────────────────────────────────────────
     slot_2_start:
@@ -106,26 +88,6 @@ blueprint:
           min: 0
           max: 100
           unit_of_measurement: "%"
-          mode: slider
-    slot_2_color_temp:
-      name: "Slot 2 — Color Temperature (mireds)"
-      description: "Color temperature for lights in slot 2 (0 = use device default)."
-      default: 0
-      selector:
-        number:
-          min: 0
-          max: 500
-          unit_of_measurement: "mireds"
-          mode: slider
-    slot_2_transition:
-      name: "Slot 2 — Transition (seconds)"
-      description: "Transition duration for slot 2 (0 = instant)."
-      default: 0
-      selector:
-        number:
-          min: 0
-          max: 60
-          unit_of_measurement: seconds
           mode: slider
 
     # ── Time Slot 3 ──────────────────────────────────────────
@@ -157,26 +119,6 @@ blueprint:
           max: 100
           unit_of_measurement: "%"
           mode: slider
-    slot_3_color_temp:
-      name: "Slot 3 — Color Temperature (mireds)"
-      description: "Color temperature for lights in slot 3 (0 = use device default)."
-      default: 0
-      selector:
-        number:
-          min: 0
-          max: 500
-          unit_of_measurement: "mireds"
-          mode: slider
-    slot_3_transition:
-      name: "Slot 3 — Transition (seconds)"
-      description: "Transition duration for slot 3 (0 = instant)."
-      default: 0
-      selector:
-        number:
-          min: 0
-          max: 60
-          unit_of_measurement: seconds
-          mode: slider
 
     # ── Time Slot 4 ──────────────────────────────────────────
     slot_4_start:
@@ -206,26 +148,6 @@ blueprint:
           min: 0
           max: 100
           unit_of_measurement: "%"
-          mode: slider
-    slot_4_color_temp:
-      name: "Slot 4 — Color Temperature (mireds)"
-      description: "Color temperature for lights in slot 4 (0 = use device default)."
-      default: 0
-      selector:
-        number:
-          min: 0
-          max: 500
-          unit_of_measurement: "mireds"
-          mode: slider
-    slot_4_transition:
-      name: "Slot 4 — Transition (seconds)"
-      description: "Transition duration for slot 4 (0 = instant)."
-      default: 0
-      selector:
-        number:
-          min: 0
-          max: 60
-          unit_of_measurement: seconds
           mode: slider
 
     # ── Time Slot 5 ──────────────────────────────────────────
@@ -257,26 +179,6 @@ blueprint:
           max: 100
           unit_of_measurement: "%"
           mode: slider
-    slot_5_color_temp:
-      name: "Slot 5 — Color Temperature (mireds)"
-      description: "Color temperature for lights in slot 5 (0 = use device default)."
-      default: 0
-      selector:
-        number:
-          min: 0
-          max: 500
-          unit_of_measurement: "mireds"
-          mode: slider
-    slot_5_transition:
-      name: "Slot 5 — Transition (seconds)"
-      description: "Transition duration for slot 5 (0 = instant)."
-      default: 0
-      selector:
-        number:
-          min: 0
-          max: 60
-          unit_of_measurement: seconds
-          mode: slider
 
 mode: restart
 max_exceeded: silent
@@ -284,20 +186,10 @@ max_exceeded: silent
 variables:
   sensors: !input motion_sensors
   s1_brightness: !input slot_1_brightness
-  s1_color_temp: !input slot_1_color_temp
-  s1_transition: !input slot_1_transition
   s2_brightness: !input slot_2_brightness
-  s2_color_temp: !input slot_2_color_temp
-  s2_transition: !input slot_2_transition
   s3_brightness: !input slot_3_brightness
-  s3_color_temp: !input slot_3_color_temp
-  s3_transition: !input slot_3_transition
   s4_brightness: !input slot_4_brightness
-  s4_color_temp: !input slot_4_color_temp
-  s4_transition: !input slot_4_transition
   s5_brightness: !input slot_5_brightness
-  s5_color_temp: !input slot_5_color_temp
-  s5_transition: !input slot_5_transition
 
 trigger:
   - platform: state
@@ -320,8 +212,6 @@ action:
               turn_on_data: >
                 {{ dict(
                   ([('brightness_pct', s1_brightness | int)] if s1_brightness | int > 0 else [])
-                  + ([('color_temp', s1_color_temp | int)] if s1_color_temp | int > 0 else [])
-                  + ([('transition', s1_transition | int)] if s1_transition | int > 0 else [])
                 ) }}
           - service: homeassistant.turn_on
             target: !input slot_1_target
@@ -338,8 +228,6 @@ action:
               turn_on_data: >
                 {{ dict(
                   ([('brightness_pct', s2_brightness | int)] if s2_brightness | int > 0 else [])
-                  + ([('color_temp', s2_color_temp | int)] if s2_color_temp | int > 0 else [])
-                  + ([('transition', s2_transition | int)] if s2_transition | int > 0 else [])
                 ) }}
           - service: homeassistant.turn_on
             target: !input slot_2_target
@@ -356,8 +244,6 @@ action:
               turn_on_data: >
                 {{ dict(
                   ([('brightness_pct', s3_brightness | int)] if s3_brightness | int > 0 else [])
-                  + ([('color_temp', s3_color_temp | int)] if s3_color_temp | int > 0 else [])
-                  + ([('transition', s3_transition | int)] if s3_transition | int > 0 else [])
                 ) }}
           - service: homeassistant.turn_on
             target: !input slot_3_target
@@ -374,8 +260,6 @@ action:
               turn_on_data: >
                 {{ dict(
                   ([('brightness_pct', s4_brightness | int)] if s4_brightness | int > 0 else [])
-                  + ([('color_temp', s4_color_temp | int)] if s4_color_temp | int > 0 else [])
-                  + ([('transition', s4_transition | int)] if s4_transition | int > 0 else [])
                 ) }}
           - service: homeassistant.turn_on
             target: !input slot_4_target
@@ -392,8 +276,6 @@ action:
               turn_on_data: >
                 {{ dict(
                   ([('brightness_pct', s5_brightness | int)] if s5_brightness | int > 0 else [])
-                  + ([('color_temp', s5_color_temp | int)] if s5_color_temp | int > 0 else [])
-                  + ([('transition', s5_transition | int)] if s5_transition | int > 0 else [])
                 ) }}
           - service: homeassistant.turn_on
             target: !input slot_5_target
