@@ -1,0 +1,427 @@
+blueprint:
+  name: "Advanced Motion-Activated Light (Multi-Sensor, Time Slots)"
+  description: >
+    Turn on lights/switches by motion with support for multiple motion sensors
+    (OR logic), up to 5 time slots with individual targets and settings
+    (brightness, color temperature, transition), and a global turn-off delay.
+  domain: automation
+  source_url: https://github.com/steelden/homeassistant-advanced-motion-blueprint
+
+  input:
+    motion_sensors:
+      name: "Motion Sensors"
+      description: "One or more motion sensors. Light turns on when ANY sensor detects motion, turns off when ALL sensors clear."
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class: motion
+          multiple: true
+
+    wait_time:
+      name: "Turn-off Delay"
+      description: "Seconds to wait after all sensors clear before turning off (0 = instant)."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 3600
+          unit_of_measurement: seconds
+          mode: slider
+
+    # ── Time Slot 1 ──────────────────────────────────────────
+    slot_1_start:
+      name: "Slot 1 — Start Time"
+      description: "Start of time range for slot 1. Leave both start and end at 00:00:00 to disable."
+      default: "00:00:00"
+      selector:
+        time:
+    slot_1_end:
+      name: "Slot 1 — End Time"
+      description: "End of time range for slot 1."
+      default: "00:00:00"
+      selector:
+        time:
+    slot_1_target:
+      name: "Slot 1 — Target Devices"
+      description: "Devices to control during slot 1."
+      default: {}
+      selector:
+        target:
+    slot_1_brightness:
+      name: "Slot 1 — Brightness (%)"
+      description: "Brightness for lights in slot 1 (0 = use device default)."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+          mode: slider
+    slot_1_color_temp:
+      name: "Slot 1 — Color Temperature (mireds)"
+      description: "Color temperature for lights in slot 1 (0 = use device default)."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 500
+          unit_of_measurement: "mireds"
+          mode: slider
+    slot_1_transition:
+      name: "Slot 1 — Transition (seconds)"
+      description: "Transition duration for slot 1 (0 = instant)."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 60
+          unit_of_measurement: seconds
+          mode: slider
+
+    # ── Time Slot 2 ──────────────────────────────────────────
+    slot_2_start:
+      name: "Slot 2 — Start Time"
+      description: "Start of time range for slot 2. Leave both start and end at 00:00:00 to disable."
+      default: "00:00:00"
+      selector:
+        time:
+    slot_2_end:
+      name: "Slot 2 — End Time"
+      description: "End of time range for slot 2."
+      default: "00:00:00"
+      selector:
+        time:
+    slot_2_target:
+      name: "Slot 2 — Target Devices"
+      description: "Devices to control during slot 2."
+      default: {}
+      selector:
+        target:
+    slot_2_brightness:
+      name: "Slot 2 — Brightness (%)"
+      description: "Brightness for lights in slot 2 (0 = use device default)."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+          mode: slider
+    slot_2_color_temp:
+      name: "Slot 2 — Color Temperature (mireds)"
+      description: "Color temperature for lights in slot 2 (0 = use device default)."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 500
+          unit_of_measurement: "mireds"
+          mode: slider
+    slot_2_transition:
+      name: "Slot 2 — Transition (seconds)"
+      description: "Transition duration for slot 2 (0 = instant)."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 60
+          unit_of_measurement: seconds
+          mode: slider
+
+    # ── Time Slot 3 ──────────────────────────────────────────
+    slot_3_start:
+      name: "Slot 3 — Start Time"
+      description: "Start of time range for slot 3. Leave both start and end at 00:00:00 to disable."
+      default: "00:00:00"
+      selector:
+        time:
+    slot_3_end:
+      name: "Slot 3 — End Time"
+      description: "End of time range for slot 3."
+      default: "00:00:00"
+      selector:
+        time:
+    slot_3_target:
+      name: "Slot 3 — Target Devices"
+      description: "Devices to control during slot 3."
+      default: {}
+      selector:
+        target:
+    slot_3_brightness:
+      name: "Slot 3 — Brightness (%)"
+      description: "Brightness for lights in slot 3 (0 = use device default)."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+          mode: slider
+    slot_3_color_temp:
+      name: "Slot 3 — Color Temperature (mireds)"
+      description: "Color temperature for lights in slot 3 (0 = use device default)."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 500
+          unit_of_measurement: "mireds"
+          mode: slider
+    slot_3_transition:
+      name: "Slot 3 — Transition (seconds)"
+      description: "Transition duration for slot 3 (0 = instant)."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 60
+          unit_of_measurement: seconds
+          mode: slider
+
+    # ── Time Slot 4 ──────────────────────────────────────────
+    slot_4_start:
+      name: "Slot 4 — Start Time"
+      description: "Start of time range for slot 4. Leave both start and end at 00:00:00 to disable."
+      default: "00:00:00"
+      selector:
+        time:
+    slot_4_end:
+      name: "Slot 4 — End Time"
+      description: "End of time range for slot 4."
+      default: "00:00:00"
+      selector:
+        time:
+    slot_4_target:
+      name: "Slot 4 — Target Devices"
+      description: "Devices to control during slot 4."
+      default: {}
+      selector:
+        target:
+    slot_4_brightness:
+      name: "Slot 4 — Brightness (%)"
+      description: "Brightness for lights in slot 4 (0 = use device default)."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+          mode: slider
+    slot_4_color_temp:
+      name: "Slot 4 — Color Temperature (mireds)"
+      description: "Color temperature for lights in slot 4 (0 = use device default)."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 500
+          unit_of_measurement: "mireds"
+          mode: slider
+    slot_4_transition:
+      name: "Slot 4 — Transition (seconds)"
+      description: "Transition duration for slot 4 (0 = instant)."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 60
+          unit_of_measurement: seconds
+          mode: slider
+
+    # ── Time Slot 5 ──────────────────────────────────────────
+    slot_5_start:
+      name: "Slot 5 — Start Time"
+      description: "Start of time range for slot 5. Leave both start and end at 00:00:00 to disable."
+      default: "00:00:00"
+      selector:
+        time:
+    slot_5_end:
+      name: "Slot 5 — End Time"
+      description: "End of time range for slot 5."
+      default: "00:00:00"
+      selector:
+        time:
+    slot_5_target:
+      name: "Slot 5 — Target Devices"
+      description: "Devices to control during slot 5."
+      default: {}
+      selector:
+        target:
+    slot_5_brightness:
+      name: "Slot 5 — Brightness (%)"
+      description: "Brightness for lights in slot 5 (0 = use device default)."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+          mode: slider
+    slot_5_color_temp:
+      name: "Slot 5 — Color Temperature (mireds)"
+      description: "Color temperature for lights in slot 5 (0 = use device default)."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 500
+          unit_of_measurement: "mireds"
+          mode: slider
+    slot_5_transition:
+      name: "Slot 5 — Transition (seconds)"
+      description: "Transition duration for slot 5 (0 = instant)."
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 60
+          unit_of_measurement: seconds
+          mode: slider
+
+mode: restart
+max_exceeded: silent
+
+variables:
+  sensors: !input motion_sensors
+  s1_brightness: !input slot_1_brightness
+  s1_color_temp: !input slot_1_color_temp
+  s1_transition: !input slot_1_transition
+  s2_brightness: !input slot_2_brightness
+  s2_color_temp: !input slot_2_color_temp
+  s2_transition: !input slot_2_transition
+  s3_brightness: !input slot_3_brightness
+  s3_color_temp: !input slot_3_color_temp
+  s3_transition: !input slot_3_transition
+  s4_brightness: !input slot_4_brightness
+  s4_color_temp: !input slot_4_color_temp
+  s4_transition: !input slot_4_transition
+  s5_brightness: !input slot_5_brightness
+  s5_color_temp: !input slot_5_color_temp
+  s5_transition: !input slot_5_transition
+
+trigger:
+  - platform: state
+    entity_id: !input motion_sensors
+    to: "on"
+
+action:
+  - variables:
+      slot_activated: false
+
+  - choose:
+      # ── Slot 1 ───────────────────────────────────────────────
+      - conditions:
+          - condition: time
+            after: !input slot_1_start
+            before: !input slot_1_end
+        sequence:
+          - variables:
+              slot_activated: true
+              turn_on_data: >
+                {{ dict(
+                  ([('brightness_pct', s1_brightness | int)] if s1_brightness | int > 0 else [])
+                  + ([('color_temp', s1_color_temp | int)] if s1_color_temp | int > 0 else [])
+                  + ([('transition', s1_transition | int)] if s1_transition | int > 0 else [])
+                ) }}
+          - service: homeassistant.turn_on
+            target: !input slot_1_target
+            data: "{{ turn_on_data }}"
+
+      # ── Slot 2 ───────────────────────────────────────────────
+      - conditions:
+          - condition: time
+            after: !input slot_2_start
+            before: !input slot_2_end
+        sequence:
+          - variables:
+              slot_activated: true
+              turn_on_data: >
+                {{ dict(
+                  ([('brightness_pct', s2_brightness | int)] if s2_brightness | int > 0 else [])
+                  + ([('color_temp', s2_color_temp | int)] if s2_color_temp | int > 0 else [])
+                  + ([('transition', s2_transition | int)] if s2_transition | int > 0 else [])
+                ) }}
+          - service: homeassistant.turn_on
+            target: !input slot_2_target
+            data: "{{ turn_on_data }}"
+
+      # ── Slot 3 ───────────────────────────────────────────────
+      - conditions:
+          - condition: time
+            after: !input slot_3_start
+            before: !input slot_3_end
+        sequence:
+          - variables:
+              slot_activated: true
+              turn_on_data: >
+                {{ dict(
+                  ([('brightness_pct', s3_brightness | int)] if s3_brightness | int > 0 else [])
+                  + ([('color_temp', s3_color_temp | int)] if s3_color_temp | int > 0 else [])
+                  + ([('transition', s3_transition | int)] if s3_transition | int > 0 else [])
+                ) }}
+          - service: homeassistant.turn_on
+            target: !input slot_3_target
+            data: "{{ turn_on_data }}"
+
+      # ── Slot 4 ───────────────────────────────────────────────
+      - conditions:
+          - condition: time
+            after: !input slot_4_start
+            before: !input slot_4_end
+        sequence:
+          - variables:
+              slot_activated: true
+              turn_on_data: >
+                {{ dict(
+                  ([('brightness_pct', s4_brightness | int)] if s4_brightness | int > 0 else [])
+                  + ([('color_temp', s4_color_temp | int)] if s4_color_temp | int > 0 else [])
+                  + ([('transition', s4_transition | int)] if s4_transition | int > 0 else [])
+                ) }}
+          - service: homeassistant.turn_on
+            target: !input slot_4_target
+            data: "{{ turn_on_data }}"
+
+      # ── Slot 5 ───────────────────────────────────────────────
+      - conditions:
+          - condition: time
+            after: !input slot_5_start
+            before: !input slot_5_end
+        sequence:
+          - variables:
+              slot_activated: true
+              turn_on_data: >
+                {{ dict(
+                  ([('brightness_pct', s5_brightness | int)] if s5_brightness | int > 0 else [])
+                  + ([('color_temp', s5_color_temp | int)] if s5_color_temp | int > 0 else [])
+                  + ([('transition', s5_transition | int)] if s5_transition | int > 0 else [])
+                ) }}
+          - service: homeassistant.turn_on
+            target: !input slot_5_target
+            data: "{{ turn_on_data }}"
+
+  # ── Stop here if no slot matched (outside all configured time ranges) ──
+  - condition: template
+    value_template: "{{ slot_activated }}"
+
+  # ── Wait for ALL motion sensors to clear ───────────────────
+  - wait_for_trigger:
+      - platform: template
+        value_template: >
+          {{ expand(sensors) | selectattr('state', 'eq', 'off') | list | count
+             == expand(sensors) | list | count }}
+
+  # ── Turn-off delay ─────────────────────────────────────────
+  - delay:
+      seconds: !input wait_time
+
+  # ── Turn off all targets from all slots ────────────────────
+  - service: homeassistant.turn_off
+    target: !input slot_1_target
+  - service: homeassistant.turn_off
+    target: !input slot_2_target
+  - service: homeassistant.turn_off
+    target: !input slot_3_target
+  - service: homeassistant.turn_off
+    target: !input slot_4_target
+  - service: homeassistant.turn_off
+    target: !input slot_5_target
