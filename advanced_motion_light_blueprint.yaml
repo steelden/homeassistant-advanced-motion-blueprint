@@ -1,16 +1,23 @@
 blueprint:
-  name: "Advanced Motion-Activated Light (Multi-Sensor, Time Slots)"
+  name: "Motion-Activated Light (Multi-Sensor, Schedule)"
   description: >
-    Turn on lights/switches by motion with support for multiple motion/occupancy
-    sensors (OR logic), up to 5 time slots with individual targets and brightness
-    settings, and a global turn-off delay.
+    Turns devices on when ANY of the motion/occupancy sensors detects motion — but only
+    while the schedule is on (or always, if no schedule is set). Turns them off when ALL
+    sensors have been clear for the turn-off delay — at any time of day, schedule or not.
+
+    Periods are set in a Schedule helper (Settings → Devices & services → Helpers →
+    Create helper → Schedule): any number of periods, per weekday.
   domain: automation
   source_url: https://github.com/steelden/homeassistant-advanced-motion-blueprint
+  homeassistant:
+    min_version: "2024.10.0"
 
   input:
     motion_sensors:
-      name: "Motion Sensors"
-      description: "One or more motion sensors. Light turns on when ANY sensor detects motion, turns off when ALL sensors clear."
+      name: "Motion sensors"
+      description: >
+        Motion is present while at least one sensor is on, and absent when none of them is
+        (off or unavailable).
       selector:
         entity:
           domain: binary_sensor
@@ -19,291 +26,80 @@ blueprint:
             - occupancy
           multiple: true
 
-    wait_time:
-      name: "Turn-off Delay"
-      description: "Seconds to wait after all sensors clear before turning off (0 = instant)."
+    targets:
+      name: "Devices"
+      description: "Lights, switches, fans, devices or areas to turn on and off."
+      selector:
+        target:
+
+    schedule:
+      name: "Schedule (optional)"
+      description: >
+        Motion turns the devices on only while this schedule is on. Leave empty to react to
+        motion at any time. Turning off does not depend on the schedule.
+      default: ""
+      selector:
+        entity:
+          domain: schedule
+
+    off_delay:
+      name: "Turn-off delay"
+      description: "How long all sensors must stay clear before the devices are turned off (0 = at once)."
       default: 0
       selector:
         number:
           min: 0
           max: 3600
           unit_of_measurement: seconds
-          mode: slider
+          mode: box
 
-    # ── Time Slot 1 ──────────────────────────────────────────
-    slot_1_start:
-      name: "Slot 1 — Start Time"
-      description: "Start of time range for slot 1. Leave both start and end at 00:00:00 to disable."
-      default: "00:00:00"
-      selector:
-        time:
-    slot_1_end:
-      name: "Slot 1 — End Time"
-      description: "End of time range for slot 1."
-      default: "00:00:00"
-      selector:
-        time:
-    slot_1_target:
-      name: "Slot 1 — Target Devices"
-      description: "Devices to control during slot 1."
-      default: {}
-      selector:
-        target:
-    slot_1_brightness:
-      name: "Slot 1 — Brightness (%)"
-      description: "Brightness for lights in slot 1 (0 = use device default)."
-      default: 0
-      selector:
-        number:
-          min: 0
-          max: 100
-          unit_of_measurement: "%"
-          mode: slider
-
-    # ── Time Slot 2 ──────────────────────────────────────────
-    slot_2_start:
-      name: "Slot 2 — Start Time"
-      description: "Start of time range for slot 2. Leave both start and end at 00:00:00 to disable."
-      default: "00:00:00"
-      selector:
-        time:
-    slot_2_end:
-      name: "Slot 2 — End Time"
-      description: "End of time range for slot 2."
-      default: "00:00:00"
-      selector:
-        time:
-    slot_2_target:
-      name: "Slot 2 — Target Devices"
-      description: "Devices to control during slot 2."
-      default: {}
-      selector:
-        target:
-    slot_2_brightness:
-      name: "Slot 2 — Brightness (%)"
-      description: "Brightness for lights in slot 2 (0 = use device default)."
-      default: 0
-      selector:
-        number:
-          min: 0
-          max: 100
-          unit_of_measurement: "%"
-          mode: slider
-
-    # ── Time Slot 3 ──────────────────────────────────────────
-    slot_3_start:
-      name: "Slot 3 — Start Time"
-      description: "Start of time range for slot 3. Leave both start and end at 00:00:00 to disable."
-      default: "00:00:00"
-      selector:
-        time:
-    slot_3_end:
-      name: "Slot 3 — End Time"
-      description: "End of time range for slot 3."
-      default: "00:00:00"
-      selector:
-        time:
-    slot_3_target:
-      name: "Slot 3 — Target Devices"
-      description: "Devices to control during slot 3."
-      default: {}
-      selector:
-        target:
-    slot_3_brightness:
-      name: "Slot 3 — Brightness (%)"
-      description: "Brightness for lights in slot 3 (0 = use device default)."
-      default: 0
-      selector:
-        number:
-          min: 0
-          max: 100
-          unit_of_measurement: "%"
-          mode: slider
-
-    # ── Time Slot 4 ──────────────────────────────────────────
-    slot_4_start:
-      name: "Slot 4 — Start Time"
-      description: "Start of time range for slot 4. Leave both start and end at 00:00:00 to disable."
-      default: "00:00:00"
-      selector:
-        time:
-    slot_4_end:
-      name: "Slot 4 — End Time"
-      description: "End of time range for slot 4."
-      default: "00:00:00"
-      selector:
-        time:
-    slot_4_target:
-      name: "Slot 4 — Target Devices"
-      description: "Devices to control during slot 4."
-      default: {}
-      selector:
-        target:
-    slot_4_brightness:
-      name: "Slot 4 — Brightness (%)"
-      description: "Brightness for lights in slot 4 (0 = use device default)."
-      default: 0
-      selector:
-        number:
-          min: 0
-          max: 100
-          unit_of_measurement: "%"
-          mode: slider
-
-    # ── Time Slot 5 ──────────────────────────────────────────
-    slot_5_start:
-      name: "Slot 5 — Start Time"
-      description: "Start of time range for slot 5. Leave both start and end at 00:00:00 to disable."
-      default: "00:00:00"
-      selector:
-        time:
-    slot_5_end:
-      name: "Slot 5 — End Time"
-      description: "End of time range for slot 5."
-      default: "00:00:00"
-      selector:
-        time:
-    slot_5_target:
-      name: "Slot 5 — Target Devices"
-      description: "Devices to control during slot 5."
-      default: {}
-      selector:
-        target:
-    slot_5_brightness:
-      name: "Slot 5 — Brightness (%)"
-      description: "Brightness for lights in slot 5 (0 = use device default)."
-      default: 0
-      selector:
-        number:
-          min: 0
-          max: 100
-          unit_of_measurement: "%"
-          mode: slider
-
-mode: restart
+mode: queued
 max_exceeded: silent
 
-variables:
+trigger_variables:
   sensors: !input motion_sensors
-  s1_brightness: !input slot_1_brightness
-  s2_brightness: !input slot_2_brightness
-  s3_brightness: !input slot_3_brightness
-  s4_brightness: !input slot_4_brightness
-  s5_brightness: !input slot_5_brightness
 
-trigger:
-  - platform: state
+variables:
+  schedule: !input schedule
+
+triggers:
+  # Any sensor detects motion.
+  - trigger: state
     entity_id: !input motion_sensors
     to: "on"
+    id: motion
+  # No sensor detects motion (all off or unavailable) — and it stayed so for the delay.
+  - trigger: template
+    value_template: "{{ expand(sensors) | selectattr('state', 'eq', 'on') | list | count == 0 }}"
+    for:
+      seconds: !input off_delay
+    id: clear
+  # After a restart, pending delays are lost; turn off if nobody is there.
+  - trigger: homeassistant
+    event: start
+    id: start
 
-action:
-  - variables:
-      slot_activated: false
-
+actions:
   - choose:
-      # ── Slot 1 ───────────────────────────────────────────────
       - conditions:
-          - condition: time
-            after: !input slot_1_start
-            before: !input slot_1_end
+          - condition: trigger
+            id: motion
+          - condition: template
+            value_template: "{{ not schedule or is_state(schedule, 'on') }}"
         sequence:
-          - variables:
-              slot_activated: true
-              turn_on_data: >
-                {{ dict(
-                  ([('brightness_pct', s1_brightness | int)] if s1_brightness | int > 0 else [])
-                ) }}
-          - service: homeassistant.turn_on
-            target: !input slot_1_target
-            data: "{{ turn_on_data }}"
-
-      # ── Slot 2 ───────────────────────────────────────────────
+          - action: homeassistant.turn_on
+            target: !input targets
       - conditions:
-          - condition: time
-            after: !input slot_2_start
-            before: !input slot_2_end
+          - condition: trigger
+            id: clear
         sequence:
-          - variables:
-              slot_activated: true
-              turn_on_data: >
-                {{ dict(
-                  ([('brightness_pct', s2_brightness | int)] if s2_brightness | int > 0 else [])
-                ) }}
-          - service: homeassistant.turn_on
-            target: !input slot_2_target
-            data: "{{ turn_on_data }}"
-
-      # ── Slot 3 ───────────────────────────────────────────────
+          - action: homeassistant.turn_off
+            target: !input targets
       - conditions:
-          - condition: time
-            after: !input slot_3_start
-            before: !input slot_3_end
+          - condition: trigger
+            id: start
+          - condition: template
+            value_template: "{{ expand(sensors) | selectattr('state', 'eq', 'on') | list | count == 0 }}"
         sequence:
-          - variables:
-              slot_activated: true
-              turn_on_data: >
-                {{ dict(
-                  ([('brightness_pct', s3_brightness | int)] if s3_brightness | int > 0 else [])
-                ) }}
-          - service: homeassistant.turn_on
-            target: !input slot_3_target
-            data: "{{ turn_on_data }}"
-
-      # ── Slot 4 ───────────────────────────────────────────────
-      - conditions:
-          - condition: time
-            after: !input slot_4_start
-            before: !input slot_4_end
-        sequence:
-          - variables:
-              slot_activated: true
-              turn_on_data: >
-                {{ dict(
-                  ([('brightness_pct', s4_brightness | int)] if s4_brightness | int > 0 else [])
-                ) }}
-          - service: homeassistant.turn_on
-            target: !input slot_4_target
-            data: "{{ turn_on_data }}"
-
-      # ── Slot 5 ───────────────────────────────────────────────
-      - conditions:
-          - condition: time
-            after: !input slot_5_start
-            before: !input slot_5_end
-        sequence:
-          - variables:
-              slot_activated: true
-              turn_on_data: >
-                {{ dict(
-                  ([('brightness_pct', s5_brightness | int)] if s5_brightness | int > 0 else [])
-                ) }}
-          - service: homeassistant.turn_on
-            target: !input slot_5_target
-            data: "{{ turn_on_data }}"
-
-  # ── Stop here if no slot matched (outside all configured time ranges) ──
-  - condition: template
-    value_template: "{{ slot_activated }}"
-
-  # ── Wait for ALL motion sensors to clear ───────────────────
-  - wait_for_trigger:
-      - platform: template
-        value_template: >
-          {{ expand(sensors) | selectattr('state', 'eq', 'off') | list | count
-             == expand(sensors) | list | count }}
-
-  # ── Turn-off delay ─────────────────────────────────────────
-  - delay:
-      seconds: !input wait_time
-
-  # ── Turn off all targets from all slots ────────────────────
-  - service: homeassistant.turn_off
-    target: !input slot_1_target
-  - service: homeassistant.turn_off
-    target: !input slot_2_target
-  - service: homeassistant.turn_off
-    target: !input slot_3_target
-  - service: homeassistant.turn_off
-    target: !input slot_4_target
-  - service: homeassistant.turn_off
-    target: !input slot_5_target
+          - action: homeassistant.turn_off
+            target: !input targets
