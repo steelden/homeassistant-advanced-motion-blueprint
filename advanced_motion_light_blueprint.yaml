@@ -8,7 +8,7 @@ blueprint:
     Periods are set in a Schedule helper (Settings → Devices & services → Helpers →
     Create helper → Schedule): any number of periods, per weekday.
   domain: automation
-  source_url: https://github.com/steelden/homeassistant-advanced-motion-blueprint
+  source_url: https://github.com/steelden/homeassistant-advanced-motion-blueprint/blob/main/advanced_motion_light_blueprint.yaml
   homeassistant:
     min_version: "2024.10.0"
 
